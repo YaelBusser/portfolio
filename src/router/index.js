@@ -1,6 +1,10 @@
+import { ref } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Accueil from "@/views/Accueil"
-import MentionsLegales from "@/views/MentionsLegales"
+
+export const isLoading = ref(true)
+const dtLoader = 1000 // minimum display time
+let debounceLoading = 0
 
 const routes = [
   {
@@ -9,19 +13,44 @@ const routes = [
     component: Accueil
   },
   {
+    path: "/portfolio",
+    name: "MonPortfolio",
+    component: () => import(/* webpackChunkName: "about" */ "@/views/MonPortfolio.vue")
+  },
+  {
+    path: "/aPropos",
+    name: "Moi",
+    component: () => import(/* webpackChunkName: "about" */ "@/views/Moi.vue")
+  },
+  {
+    path: "/competences",
+    name: "Competences",
+    component: () => import(/* webpackChunkName: "about" */ "@/views/Competences.vue")
+  },
+  {
+    path: "/contact",
+    name: "Contact",
+    component: () => import(/* webpackChunkName: "about" */ "@/views/Contact.vue")
+  },
+  {
     path: "/mentions_legales",
     name: "MentionsLegales",
-    component: MentionsLegales
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    // component: () => import(/* webpackChunkName: "about" */ "@/views/MentionsLegales.vue")
+    component: () => import(/* webpackChunkName: "about" */ "@/views/MentionsLegales.vue")
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach(() => {
+  window.clearTimeout(debounceLoading)
+  isLoading.value = true
+})
+router.afterEach(() => {
+  window.clearTimeout(debounceLoading)
+  debounceLoading = window.setTimeout(() => (isLoading.value = false), dtLoader)
 })
 
 export default router
